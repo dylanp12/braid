@@ -1,4 +1,4 @@
-from tools.check_public_boundary import detected_secret_kind, is_private_credential_filename
+from braid.public_boundary import detected_secret_kind, is_private_credential_filename
 
 
 def test_modern_secret_families_are_detected_without_literal_test_credentials() -> None:
