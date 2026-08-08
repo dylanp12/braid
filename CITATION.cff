@@ -1,0 +1,10 @@
+cff-version: 1.2.0
+message: "If you use Braid, cite the repository release and its benchmark card."
+title: "Braid: evidence-gated temporal graph forecasting research platform"
+type: software
+authors:
+  - family-names: "P."
+    given-names: "Dylan"
+license: Apache-2.0
+version: 0.1.0
+repository-code: "https://github.com/dylanp12/braid"

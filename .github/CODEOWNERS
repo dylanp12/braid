@@ -1,0 +1,7 @@
+* @dylanp12
+
+# Causal contract and claim-policy changes always require explicit ownership.
+/src/braid/contract/ @dylanp12
+/src/braid/bench/evidence.py @dylanp12
+/src/braid/bench/gates.py @dylanp12
+/docs/evidence-policy.md @dylanp12

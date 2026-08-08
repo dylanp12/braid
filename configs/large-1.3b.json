@@ -1,0 +1,73 @@
+{
+  "format_version": 1,
+  "scale_key": "1.3b",
+  "name": "large-1.3b",
+  "claim_level": "engineering-build",
+  "parameter_label": "~1.3B",
+  "target_parameters": 1300000000,
+  "expected_parameters": 1289503003,
+  "parameter_tolerance_fraction": 0.05,
+  "d_model": 2048,
+  "n_heads": 32,
+  "schema_layers": 6,
+  "decoder_layers": 17,
+  "d_ff": 8192,
+  "context_events": 32768,
+  "memory_slots": 524288,
+  "time_unit_seconds": 86400,
+  "dropout": 0.1,
+  "min_diverse_training_tokens": 26000000000,
+  "execution_policy": "requires positive scaling and transfer curves",
+  "tokenizer": {
+    "class": "BraidTokenizer",
+    "version": 1,
+    "normalization": "NFC",
+    "byte_offset": 16,
+    "vocab_size": 272
+  },
+  "training_policy": {
+    "objective_weights": {
+      "patch": 0.65,
+      "schema_episode": 0.15,
+      "reconstruction": 0.1,
+      "contrastive": 0.1
+    },
+    "support_events_k": [0, 1, 2, 4, 8],
+    "operation_vocabulary": [
+      "CREATE_NODE",
+      "UPDATE_NODE",
+      "ASSERT",
+      "RETRACT",
+      "SUPERSEDE",
+      "SCHEMA_CHANGE",
+      "EXPOSE",
+      "JUDGE"
+    ],
+    "right_censoring_survival_likelihood": true,
+    "patch_factor_weighting": "uniform-mean",
+    "balanced_patch_factors": [
+      "time",
+      "valid_lag",
+      "operation",
+      "relation",
+      "argument",
+      "payload",
+      "evidence"
+    ],
+    "contrastive_corruptions": ["hard-semantic", "hard-structural"],
+    "reconstruction_visibility": "causal-visible-prefix",
+    "sequence_order": "observed_at",
+    "valid_time_encoding": "signed-lag",
+    "random_episode_handle_renaming": true,
+    "same_timestamp_policy": "marked-tie-groups-with-randomized-training-order",
+    "fit_preprocessors_on": "train",
+    "alluvia_value_head": false
+  },
+  "promotion_policy": {
+    "requires_data_floor": true,
+    "requires_scaling_gate": true,
+    "requires_shortcut_gate": true,
+    "requires_explicit_cloud_approval": true,
+    "cloud_authorized": false
+  }
+}

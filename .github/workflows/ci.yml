@@ -1,0 +1,51 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12"]
+    steps:
+      # actions/checkout v4.4.0
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      # astral-sh/setup-uv v5.4.2
+      - uses: astral-sh/setup-uv@d4b2f3b6ecc6e67c4457f6d3e41ec42d3d0fcb86
+        with:
+          python-version: ${{ matrix.python-version }}
+          enable-cache: true
+          version: "0.7.2"
+      - run: uv sync --frozen --extra dev
+      - run: uv run python tools/check_public_boundary.py
+      - run: uv run ruff format --check .
+      - run: uv run ruff check .
+      - run: uv run pytest -s
+      - run: uv build
+      - name: Smoke-test the clean wheel
+        shell: bash
+        run: |
+          braid_smoke_dir="$(mktemp -d)"
+          uv venv --python "${{ matrix.python-version }}" "$braid_smoke_dir/venv"
+          uv pip install --python "$braid_smoke_dir/venv/bin/python" dist/*.whl
+          cd "$braid_smoke_dir"
+          "$braid_smoke_dir/venv/bin/python" -c \
+            "import braid, braid.bench.evidence, braid.contract, braid.model, braid.synthetic"
+          "$braid_smoke_dir/venv/bin/braid" status > status.json
+          "$braid_smoke_dir/venv/bin/braid" synthetic \
+            --seed 7 --events 4 --output world.json > synthetic-receipt.json
+          "$braid_smoke_dir/venv/bin/braid" validate world.json > validation.json
+          "$braid_smoke_dir/venv/bin/python" -c \
+            "import json; s=json.load(open('status.json')); assert s['claim_level']=='engineering-build'"
+          "$braid_smoke_dir/venv/bin/python" -c \
+            "import json; v=json.load(open('validation.json')); assert v['valid'] is True"
